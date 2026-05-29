@@ -1,0 +1,19 @@
+# Secrets
+.env
+
+# Build output
+target/
+
+# IDE
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# State file
+bot-state.json

@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: BrewerBot
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+app:
+  github:
+    token: ${GITHUB_TOKEN}
+    username: ${GITHUB_USERNAME}
+    # Comma-separated list of repo names to monitor. Empty = all repos.
+    repos: ${GITHUB_REPOS:}
+  telegram:
+    bot-token: ${TELEGRAM_BOT_TOKEN}
+    channel-id: ${TELEGRAM_CHANNEL_ID}
+  anthropic:
+    api-key: ${ANTHROPIC_API_KEY}
+    model: ${ANTHROPIC_MODEL:claude-sonnet-4-6}
+  scheduling:
+    # every 30 minutes
+    github-check-cron: ${GITHUB_CHECK_CRON:0 */30 * * * *}
+    # every 3 hours
+    java-news-cron: ${JAVA_NEWS_CRON:0 0 */3 * * *}
+    # every 4 hours, offset by 30 min
+    ai-news-cron: ${AI_NEWS_CRON:0 30 */4 * * *}
+  state:
+    file-path: ${STATE_FILE_PATH:./bot-state.json}
+
+logging:
+  level:
+    com.brewerbot: DEBUG
+    org.kohsuke.github: WARN
