@@ -30,6 +30,9 @@ public class TelegramPublisherService {
         String safeText = text.length() > TELEGRAM_MAX_LENGTH
             ? text.substring(0, TELEGRAM_MAX_LENGTH - 3) + "..."
             : text;
+        // Telegram HTML supports only: <b>, <i>, <u>, <s>, <code>, <pre>, <a>
+        // Strip unsupported attributes like class="language-java"
+        safeText = safeText.replaceAll("<code[^>]*>", "<code>");
 
         try {
             JsonNode response = telegramClient.post()
@@ -52,9 +55,9 @@ public class TelegramPublisherService {
             return ok;
 
         } catch (WebClientResponseException e) {
-            log.error("Telegram API error {}: {}", e.getStatusCode(), e.getResponseBodyAsString());
-            // Try sending as plain text if HTML parse failed (Telegram returns 400)
+            log.error("Telegram API error {} for chat {}: {}", e.getStatusCode(), props.getTelegram().getChannelId(), e.getResponseBodyAsString());
             if (e.getStatusCode().value() == 400) {
+                log.warn("HTML parse failed, retrying as plain text");
                 return sendPlainText(safeText);
             }
             return false;

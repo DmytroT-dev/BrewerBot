@@ -147,8 +147,12 @@ public class GitHubMonitorService {
         log.info("Analysing commit {}/{}", diff.getRepoName(), diff.getSha());
 
         contentGenerator.generateCodePost(diff).ifPresent(post -> {
-            telegramPublisher.sendMessage(post);
-            log.info("Posted code insight for {}/{}", diff.getRepoName(), diff.getSha());
+            boolean sent = telegramPublisher.sendMessage(post);
+            if (sent) {
+                log.info("Posted code insight for {}/{}", diff.getRepoName(), diff.getSha());
+            } else {
+                log.error("Failed to post code insight for {}/{}", diff.getRepoName(), diff.getSha());
+            }
         });
     }
 }
