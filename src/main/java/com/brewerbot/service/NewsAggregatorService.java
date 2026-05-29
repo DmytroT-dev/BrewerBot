@@ -39,7 +39,7 @@ public class NewsAggregatorService {
         "OpenAI", "ClaudeAI", "ChatGPT"
     );
 
-    private static final int POSTS_TO_SELECT = 3;
+    private static final int POSTS_TO_SELECT = 1;
 
     public void checkAndPostJavaNews() {
         log.info("Fetching Java/Spring news...");

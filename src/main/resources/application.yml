@@ -20,10 +20,10 @@ app:
   scheduling:
     # every 30 minutes
     github-check-cron: ${GITHUB_CHECK_CRON:0 */30 * * * *}
-    # every 3 hours
-    java-news-cron: ${JAVA_NEWS_CRON:0 0 */3 * * *}
-    # every 4 hours, offset by 30 min
-    ai-news-cron: ${AI_NEWS_CRON:0 30 */4 * * *}
+    # twice a day: 9:00 and 17:00
+    java-news-cron: ${JAVA_NEWS_CRON:0 0 9,17 * * *}
+    # once a day: 13:00
+    ai-news-cron: ${AI_NEWS_CRON:0 0 13 * * *}
   state:
     file-path: ${STATE_FILE_PATH:./bot-state.json}
 
