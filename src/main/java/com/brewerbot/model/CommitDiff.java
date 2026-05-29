@@ -9,6 +9,7 @@ import java.util.List;
 @Builder
 public class CommitDiff {
     private String repoName;
+    private String repoFullName;
     private String sha;
     private String commitMessage;
     private String authorName;

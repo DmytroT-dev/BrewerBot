@@ -136,9 +136,11 @@ public class GitHubMonitorService {
         }
 
         GHCommit.ShortInfo info = commit.getCommitShortInfo();
+        String sha7 = commit.getSHA1().substring(0, 7);
         CommitDiff diff = CommitDiff.builder()
             .repoName(repo.getName())
-            .sha(commit.getSHA1().substring(0, 7))
+            .repoFullName(repo.getFullName())
+            .sha(sha7)
             .commitMessage(info.getMessage())
             .authorName(info.getAuthor().getName())
             .files(javaDiffs)

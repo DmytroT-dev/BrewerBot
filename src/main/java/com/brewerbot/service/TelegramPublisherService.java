@@ -10,12 +10,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Slf4j
 public class TelegramPublisherService {
 
     private static final int TELEGRAM_MAX_LENGTH = 4096;
+    private static final Pattern CODE_BLOCK_PATTERN = Pattern.compile("<pre><code>(.*?)</code></pre>", Pattern.DOTALL);
 
     private final WebClient telegramClient;
     private final AppProperties props;
@@ -30,9 +33,8 @@ public class TelegramPublisherService {
         String safeText = text.length() > TELEGRAM_MAX_LENGTH
             ? text.substring(0, TELEGRAM_MAX_LENGTH - 3) + "..."
             : text;
-        // Telegram HTML supports only: <b>, <i>, <u>, <s>, <code>, <pre>, <a>
-        // Strip unsupported attributes like class="language-java"
         safeText = safeText.replaceAll("<code[^>]*>", "<code>");
+        safeText = escapeCodeBlocks(safeText);
 
         try {
             JsonNode response = telegramClient.post()
@@ -65,6 +67,20 @@ public class TelegramPublisherService {
             log.error("Failed to send Telegram message: {}", e.getMessage());
             return false;
         }
+    }
+
+    private String escapeCodeBlocks(String text) {
+        Matcher matcher = CODE_BLOCK_PATTERN.matcher(text);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String code = matcher.group(1)
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
+            matcher.appendReplacement(sb, "<pre><code>" + Matcher.quoteReplacement(code) + "</code></pre>");
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     private boolean sendPlainText(String text) {

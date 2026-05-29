@@ -40,6 +40,8 @@ public class ContentGeneratorService {
             .map(f -> "Файл: " + f.getFilename() + "\n```diff\n" + f.getPatch() + "\n```")
             .collect(Collectors.joining("\n\n"));
 
+        String commitUrl = "https://github.com/" + diff.getRepoFullName() + "/commit/" + diff.getSha();
+
         String prompt = """
             Ты пишешь пост от первого лица для Java-разработчика, который ведёт Telegram-канал о своей учёбе и работе.
             Автор канала делится тем, что он сегодня сделал в своём проекте — как дневник разработчика.
@@ -56,13 +58,14 @@ public class ContentGeneratorService {
             ФОРМАТ ПОСТА (HTML для Telegram, от первого лица — "я", "у меня", "сегодня реализовал"):
             - Эмодзи + <b>заголовок</b> (что сделал, например: "Добавил валидацию через @Valid")
             - 2-3 предложения: что именно сделал и зачем, своими словами — как будто рассказываешь другу
-            - Пример кода в <pre><code class="language-java">...</code></pre> (чистый, понятный)
+            - Пример кода в <pre><code>...</code></pre> (чистый, понятный)
             - Короткий вывод: что это даёт или чему научился
+            - Ссылка на коммит: <a href="%s">смотреть код →</a>
             - 3-5 хэштегов: #java #spring и т.д.
 
             Пиши по-русски, живо и неформально. Длина текста (без кода): 150-400 символов.
             Используй ТОЛЬКО разрешённые HTML-теги Telegram: <b>, <i>, <pre>, <code>, <a href="">.
-            """.formatted(diff.getRepoName(), diff.getCommitMessage(), filesContent);
+            """.formatted(diff.getRepoName(), diff.getCommitMessage(), filesContent, commitUrl);
 
         Optional<String> result = callClaude(prompt, 1500);
         return result.filter(text -> !text.trim().equalsIgnoreCase("SKIP"));
